@@ -48,6 +48,8 @@ class TeamTest extends TestCase
 
    public function test_it_a_team_has_a_maximum_size()
    {
+       $this->expectExceptionMessage('limit size');
+
        $team = factory(Team::class)->create(['size' => 2]);
 
        $userOne = factory(User::class)->create();
@@ -58,10 +60,18 @@ class TeamTest extends TestCase
 
        $this->assertEquals(2, $team->count());
 
-       $this->expectException('Exception');
-
        $userThree = factory(User::class)->create();
        $team->add($userThree);
+   }
+
+   public function test_when_adding_many_members_at_once_you_still_may_not_axceed_the_maximum_size()
+   {
+       $this->expectExceptionMessage('limit size');
+
+       $team = factory(Team::class)->create(['size' => 2]);
+       $users = factory(User::class, 3)->create();
+
+       $team->add($users);
    }
 
    public function test_it_at_can_remove_a_member_at_once()
